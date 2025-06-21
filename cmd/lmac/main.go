@@ -23,7 +23,13 @@ of MAC values on stdin, one on each line.
 
 Example
 
+  Scan network for devices
   $ arp -a | awk '{print $4 " " $2}' | lmac
+  ...
+
+  Lookup specific mac
+  $ lmac F8:1A:2B:00:00:FA
+  F8:1A:2B:00:00:FA Google, Inc.
 `)
 
 		fmt.Fprintln(os.Stdout, "Last updated", lmac.LastUpdate)
