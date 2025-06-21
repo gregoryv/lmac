@@ -4,18 +4,18 @@
 # https://regauth.standards.ieee.org/standards-ra-web/pub/view.html
 
 cd source
-if [ $(find ma-l.csv -mtime +1) ]; then
-    echo "update ma-l.csv"
-    wget -o source/ma-l.csv https://standards-oui.ieee.org/oui/oui.csv
+if [ $(find mal.csv -mtime +1) ]; then
+    echo "update mal.csv"
+    wget -o source/mal.csv https://standards-oui.ieee.org/oui/oui.csv
 fi
 
-if [ $(find ma-m.csv -mtime +1) ]; then
-    echo "update ma-m.csv"
-    wget -o source/ma-m.csv https://standards-oui.ieee.org/oui28/mam.csv
+if [ $(find mam.csv -mtime +1) ]; then
+    echo "update mam.csv"
+    wget -o source/mam.csv https://standards-oui.ieee.org/oui28/mam.csv
 fi
 
-if [ $(find ma-s.csv -mtime +1) ]; then
-    echo "update ma-s.csv"
-    wget -o source/ma-s.csv https://standards-oui.ieee.org/oui36/oui36.csv
+if [ $(find mas.csv -mtime +1) ]; then
+    echo "update mas.csv"
+    wget -o source/mas.csv https://standards-oui.ieee.org/oui36/oui36.csv
 fi
 
