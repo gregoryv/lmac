@@ -23,8 +23,8 @@ SYNOPSIS
 
 SEE ALSO
 
-	A similar implementation, using [3]byte as the key, is found
-	at https://github.com/google/gopacket/tree/master/macs
+	A similar implementation, is found at
+	https://github.com/google/gopacket/tree/master/macs
 	
 AUTHOR
 
