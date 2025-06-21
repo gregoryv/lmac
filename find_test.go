@@ -1,18 +1,23 @@
 package lmac
 
 import (
+	"fmt"
 	"testing"
 )
+
+func ExampleFind() {
+	fmt.Println(Find("00:03:08:00:00:00"))
+	fmt.Println(Find("00177a000000"))
+	// output:
+	// AM Communications, Inc.
+	// ASSA ABLOY AB
+}
 
 func TestFind(t *testing.T) {
 	cases := []struct {
 		arg string
 		exp string
 	}{
-		{
-			arg: "00:03:08",
-			exp: "AM Communications, Inc.",
-		},
 		{
 			arg: "ff:ff:tt",
 			exp: "unknown",

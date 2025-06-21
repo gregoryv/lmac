@@ -5,8 +5,16 @@ import (
 	"strings"
 )
 
-func Find(v string) string {
-	p, err := lprefix(v)
+// Find registered organization for the given MAC
+// Allowed formats are
+//
+//	00:00:00:00:00:aa
+//	00-00-00-00-00-aa
+//	0000000000aa
+//
+// The values are case insensitive.
+func Find(mac string) string {
+	p, err := lprefix(mac)
 	if err != nil {
 		return "unknown"
 	}
