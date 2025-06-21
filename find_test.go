@@ -8,9 +8,14 @@ import (
 func ExampleFind() {
 	fmt.Println(Find("00:03:08:00:00:00"))
 	fmt.Println(Find("00177a000000"))
+	// ma-m example
+	fmt.Println(Find("00:55:da:f0:01:00"))
+	fmt.Println(Find("04:58:5D:89:99:99"))
 	// output:
 	// AM Communications, Inc.
 	// ASSA ABLOY AB
+	// Private
+	// JRK VISION
 }
 
 func TestFind(t *testing.T) {
@@ -30,22 +35,5 @@ func TestFind(t *testing.T) {
 				t.Errorf("\ngot: %s\nexp: %s", got, c.exp)
 			}
 		})
-	}
-}
-
-func Test_lprefix(t *testing.T) {
-	cases := map[string][3]byte{
-		"00:00:01": {0, 0, 1},
-		"ff:00:01": {255, 0, 1},
-		"ff0001":   {255, 0, 1},
-		"ff-00-01": {255, 0, 1},
-
-		"00:00:01:aa:bb": {0, 0, 1},
-	}
-	for arg, exp := range cases {
-		got, err := lprefix(arg)
-		if got != exp {
-			t.Errorf("\ngot: %v\nexp: %v\nerr: %v", got, exp, err)
-		}
 	}
 }

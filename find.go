@@ -1,10 +1,5 @@
 package lmac
 
-import (
-	"encoding/hex"
-	"strings"
-)
-
 // Find registered organization for the given MAC
 // Allowed formats are
 //
@@ -14,30 +9,41 @@ import (
 //
 // The values are case insensitive.
 func Find(mac string) string {
-	p, err := lprefix(mac)
+	if res := findMal(mac); res != "" && res != "IEEE Registration Authority" {
+		return res
+	}
+
+	if res := findMam(mac); res != "" && res != "IEEE Registration Authority" {
+		return res
+	}
+
+	return "unknown"
+}
+
+func findMal(mac string) string {
+	p, err := prefixL(mac)
 	if err != nil {
-		return "unknown"
+		return ""
 	}
 
 	org := mal[p]
 	if org != "" {
 		return org
 	}
-	return "unknown"
+
+	return ""
 }
 
-func lprefix(v string) ([3]byte, error) {
-	v = strings.ReplaceAll(v, ":", "")
-	v = strings.ReplaceAll(v, "-", "")
-
-	var p [3]byte
-	raw, err := hex.DecodeString(v)
+func findMam(mac string) string {
+	p, err := prefixM(mac)
 	if err != nil {
-		return p, err
+		return ""
 	}
 
-	p[0] = raw[0]
-	p[1] = raw[1]
-	p[2] = raw[2]
-	return p, nil
+	org := mam[p]
+	if org != "" {
+		return org
+	}
+
+	return ""
 }

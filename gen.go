@@ -19,8 +19,8 @@ import (
 
 func main() {
 	genMAL("mal", "mal.go", "source/mal.csv")
-	genFile("mam", "mam.go", "source/mam.csv")
-	genFile("mas", "mas.go", "source/mas.csv")
+	genMAM("mam", "mam.go", "source/mam.csv")
+	genMAS("mas", "mas.go", "source/mas.csv")
 }
 
 func genMAL(varname, out, src string) {
@@ -50,17 +50,56 @@ package lmac
 var %s = map[[3]byte]string{
 `, varname)
 	for _, mac := range keys {
-		p, err := lprefix(mac)
+		p, err := prefixL(mac)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Fprintf(w, "\t[3]byte{%v, %v, %v}: %q,\n", p[0], p[1], p[2], oui[mac])
+		key := fmt.Sprintf("[3]byte{%v, %v, %v}", p[0], p[1], p[2])
+		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
 	}
 	fmt.Fprintln(w, "}")
 	w.Close()
 }
 
-func genFile(varname, out, src string) {
+func genMAM(varname, out, src string) {
+	oui := make(map[string]string)
+	fh, _ := os.Open(src)
+	defer fh.Close()
+	Parse(oui, fh)
+
+	if len(oui) == 0 {
+		fmt.Fprintln(os.Stderr, "missing data")
+		os.Exit(0)
+	}
+	// sort keys
+	keys := make([]string, 0, len(oui))
+	for k := range oui {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+
+	// write go file
+	w, _ := os.Create(out)
+	fmt.Fprintf(w, `
+// GENERATED, DO NOT EDIT!
+
+package lmac
+
+var %s = map[[4]byte]string{
+`, varname)
+	for _, mac := range keys {
+		p, err := prefixM(mac + "0")
+		if err != nil {
+			log.Fatal(err)
+		}
+		key := fmt.Sprintf("[4]byte{%v, %v, %v, %v}", p[0], p[1], p[2], p[3])
+		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
+	}
+	fmt.Fprintln(w, "}")
+	w.Close()
+}
+
+func genMAS(varname, out, src string) {
 	oui := make(map[string]string)
 	fh, _ := os.Open(src)
 	defer fh.Close()
@@ -148,7 +187,10 @@ func Parse(oui map[string]string, r io.Reader) {
 	}
 }
 
-func lprefix(v string) ([3]byte, error) {
+// ----------------------------------------
+// same as prefix.go
+
+func prefixL(v string) ([3]byte, error) {
 	v = strings.ReplaceAll(v, ":", "")
 	v = strings.ReplaceAll(v, "-", "")
 
@@ -160,6 +202,23 @@ func lprefix(v string) ([3]byte, error) {
 
 	p[0] = raw[0]
 	p[1] = raw[1]
-	p[0o2] = raw[2]
+	p[2] = raw[2]
+	return p, nil
+}
+
+func prefixM(v string) ([4]byte, error) {
+	v = strings.ReplaceAll(v, ":", "")
+	v = strings.ReplaceAll(v, "-", "")
+
+	var p [4]byte
+	raw, err := hex.DecodeString(v)
+	if err != nil {
+		return p, err
+	}
+
+	p[0] = raw[0]
+	p[1] = raw[1]
+	p[2] = raw[2]
+	p[3] = raw[3] & 0xf0
 	return p, nil
 }
