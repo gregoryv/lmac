@@ -2,6 +2,8 @@
 
 package lmac
 
+const LastUpdate string = "2025-06-21"
+
 var mal = map[[3]byte]string{
 	{0, 0, 0}:       "XEROX CORPORATION",
 	{0, 0, 1}:       "XEROX CORPORATION",

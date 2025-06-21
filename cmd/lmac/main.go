@@ -20,7 +20,13 @@ func main() {
 
 Either provide a list of MAC strings as arguments or a list
 of MAC values on stdin, one on each line.
+
+Example
+
+  $ arp -a | awk '{print $4 " " $2}' | lmac
 `)
+
+		fmt.Fprintln(os.Stdout, "Last updated", lmac.LastUpdate)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -38,7 +44,9 @@ of MAC values on stdin, one on each line.
 		defer close(done)
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
+			// if we get here there are values on stdin
 			once.Do(func() { close(scanning) })
+
 			line := strings.TrimSpace(s.Text())
 			if len(line) == 0 {
 				continue
@@ -54,7 +62,7 @@ of MAC values on stdin, one on each line.
 	}()
 
 	select {
-	case <-time.After(5 * time.Millisecond):
+	case <-time.After(100 * time.Millisecond):
 	case <-scanning:
 		<-done
 	}
