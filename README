@@ -1,19 +1,18 @@
 NAME
 
-	oui2go - convert http://standards-oui.ieee.org/oui/oui.txt to
+	oui2go - convert http://standards-oui.ieee.org/oui/oui.csv to
 	a Go map
 
 DESCRIPTION
 
-	Maps MAC prefix to normalized variant of the organization
-	name. Abbreviations such as "Inc" and "Ltd" are stripped from
-	the names.
+	Converts a CSV file of assigned MACs to companies and
+	organizations to a Go map for easy lookup.
 
 SYNOPSIS
 
 	$ go install github.com/gregoryv/oui2go@latest
-	$ wget http://standards-oui.ieee.org/oui/oui.txt
-	$ oui2go < oui.txt > oui.go
+	$ wget http://standards-oui.ieee.org/oui/oui.csv
+	$ oui2go < oui.csv > oui.go
 
 SEE ALSO
 
@@ -24,10 +23,11 @@ EXAMPLES
 
 	Showing a partial output
 	
+	// GENERATED, DO NOT EDIT!
+	
 	package main
 	
-	// http://standards-oui.ieee.org/oui/oui.txt
-	var oui = map[string]string{
+	var result = map[string]string{
 	        "00:00:00": "Xerox Corporation",
 	        ...
 	        "00:00:0a": "Omron Tateisi Electronics",

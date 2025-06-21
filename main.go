@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
+	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"slices"
 	"strings"
@@ -17,7 +18,7 @@ func main() {
 	Parse(oui, os.Stdin)
 
 	if len(oui) == 0 {
-		fmt.Fprintln(os.Stderr, "missing data, you must pipe oui.txt on stdin")
+		fmt.Fprintln(os.Stderr, "missing data on stdin")
 		os.Exit(0)
 	}
 	// sort keys
@@ -28,10 +29,12 @@ func main() {
 	slices.Sort(keys)
 
 	// write go file
-	fmt.Print(`package main
+	fmt.Print(`
+// GENERATED, DO NOT EDIT!
 
-// http://standards-oui.ieee.org/oui/oui.txt
-var oui = map[string]string{
+package main
+
+var result = map[string]string{
 `)
 	for _, k := range keys {
 		fmt.Printf("\t%q: %q,\n", k, oui[k])
@@ -39,7 +42,7 @@ var oui = map[string]string{
 	fmt.Println("}")
 }
 
-// Parse http://standards-oui.ieee.org/oui/oui.txt to the given map
+// Parse http://standards-oui.ieee.org/oui/oui.csv to the given map
 func Parse(oui map[string]string, r io.Reader) {
 	var (
 		done    = make(chan struct{})
@@ -48,38 +51,27 @@ func Parse(oui map[string]string, r io.Reader) {
 	)
 
 	go func() {
-		s := bufio.NewScanner(r)
-		for s.Scan() {
-			// if scanner is blocked forever, outside knows this
-			once.Do(func() { close(parsing) })
-
-			line := s.Bytes()
-			if len(line) < 3 || line[2] != '-' {
+		defer close(done)
+		in := csv.NewReader(r)
+		for {
+			record, err := in.Read()
+			if err != nil {
+				if errors.Is(err, io.EOF) {
+					return
+				}
+				log.Print(err)
 				continue
 			}
-			i := bytes.Index(line, []byte{' '})
-			mac := line[:i]
-			mac = bytes.Replace(mac, []byte{'-'}, []byte{':'}, 2)
-
-			j := bytes.Index(line, []byte{')'})
-			org := bytes.TrimSpace(line[j+1:])
-
-			key := string(bytes.ToLower(mac))
-			// normalize organization names
-			val := string(bytes.ToLower(org))
-			val = strings.TrimSuffix(val, ".")
-			val = strings.TrimSuffix(val, "ltd")
-			val = strings.TrimSuffix(val, "inc")
-			val = strings.TrimSuffix(val, "corp")
-			val = strings.TrimSpace(val)
-			val = strings.TrimSuffix(val, ",")
-			val = strings.TrimSuffix(val, ".")
-			val = strings.TrimSuffix(val, "co")
-			val = strings.TrimSpace(val)
-			val = strings.Title(val)
-			oui[key] = val
+			// if scanner is blocked forever, outside knows this
+			once.Do(func() { close(parsing) })
+			if len(record) < 3 {
+				continue
+			}
+			mac := record[1]
+			org := record[2]
+			key := strings.ToLower(mac)
+			oui[key] = org
 		}
-		close(done)
 	}()
 
 	select {
