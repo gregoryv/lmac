@@ -198,52 +198,39 @@ func Parse(oui map[string]string, r io.Reader) {
 // same as prefix.go
 
 func prefixL(v string) ([3]byte, error) {
-	v = strings.ReplaceAll(v, ":", "")
-	v = strings.ReplaceAll(v, "-", "")
-
 	var p [3]byte
-	raw, err := hex.DecodeString(v)
-	if err != nil {
+	if err := prefix(p[:], v); err != nil {
 		return p, err
 	}
-
-	p[0] = raw[0]
-	p[1] = raw[1]
-	p[2] = raw[2]
 	return p, nil
 }
 
 func prefixM(v string) ([4]byte, error) {
-	v = strings.ReplaceAll(v, ":", "")
-	v = strings.ReplaceAll(v, "-", "")
-
 	var p [4]byte
-	raw, err := hex.DecodeString(v)
-	if err != nil {
+	if err := prefix(p[:], v); err != nil {
 		return p, err
 	}
-
-	p[0] = raw[0]
-	p[1] = raw[1]
-	p[2] = raw[2]
-	p[3] = raw[3] & 0xf0
+	p[3] = p[3] & 0xf0
 	return p, nil
 }
 
 func prefixS(v string) ([5]byte, error) {
+	var p [5]byte
+	if err := prefix(p[:], v); err != nil {
+		return p, err
+	}
+	p[4] = p[4] & 0xf0
+	return p, nil
+}
+
+func prefix(dst []byte, v string) error {
 	v = strings.ReplaceAll(v, ":", "")
 	v = strings.ReplaceAll(v, "-", "")
 
-	var p [5]byte
 	raw, err := hex.DecodeString(v)
 	if err != nil {
-		return p, err
+		return err
 	}
-
-	p[0] = raw[0]
-	p[1] = raw[1]
-	p[2] = raw[2]
-	p[3] = raw[3]
-	p[4] = raw[4] & 0xf0
-	return p, nil
+	copy(dst, raw)
+	return nil
 }
