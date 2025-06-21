@@ -18,9 +18,9 @@ import (
 )
 
 func main() {
-	genMAL("mal", "ma-l.go", "source/ma-l.csv")
-	genFile("mam", "ma-m.go", "source/ma-m.csv")
-	genFile("mas", "ma-s.go", "source/ma-s.csv")
+	genMAL("mal", "mal.go", "source/mal.csv")
+	genFile("mam", "mam.go", "source/mam.csv")
+	genFile("mas", "mas.go", "source/mas.csv")
 }
 
 func genMAL(varname, out, src string) {
