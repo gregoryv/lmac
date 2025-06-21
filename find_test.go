@@ -27,7 +27,4 @@ func ExampleFind() {
 	// JRK VISION
 	//
 	// Silicon Controls
-	//
-	// unknown
-	// unknown
 }

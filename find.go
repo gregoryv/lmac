@@ -17,11 +17,7 @@ func Find(mac string) string {
 		return res
 	}
 
-	if res := findMas(mac); res != "" && res != "IEEE Registration Authority" {
-		return res
-	}
-
-	return "unknown"
+	return findMas(mac)
 }
 
 func findMal(mac string) string {
