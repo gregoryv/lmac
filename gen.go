@@ -1,3 +1,6 @@
+//go:build ignore
+
+// Command to generate Go maps of MAC to organization/company
 package main
 
 import (
@@ -14,11 +17,19 @@ import (
 )
 
 func main() {
+	genFile("mal", "ma-l.go", "source/ma-l.csv")
+	genFile("mam", "ma-m.go", "source/ma-m.csv")
+	genFile("mas", "ma-s.go", "source/ma-s.csv")
+}
+
+func genFile(varname, out, src string) {
 	oui := make(map[string]string)
-	Parse(oui, os.Stdin)
+	fh, _ := os.Open(src)
+	defer fh.Close()
+	Parse(oui, fh)
 
 	if len(oui) == 0 {
-		fmt.Fprintln(os.Stderr, "missing data on stdin")
+		fmt.Fprintln(os.Stderr, "missing data")
 		os.Exit(0)
 	}
 	// sort keys
@@ -29,17 +40,19 @@ func main() {
 	slices.Sort(keys)
 
 	// write go file
-	fmt.Print(`
+	w, _ := os.Create(out)
+	fmt.Fprintf(w, `
 // GENERATED, DO NOT EDIT!
 
-package main
+package lmac
 
-var result = map[string]string{
-`)
+var %s = map[string]string{
+`, varname)
 	for _, k := range keys {
-		fmt.Printf("\t%q: %q,\n", k, oui[k])
+		fmt.Fprintf(w, "\t%q: %q,\n", k, oui[k])
 	}
-	fmt.Println("}")
+	fmt.Fprintln(w, "}")
+	w.Close()
 }
 
 // Parse http://standards-oui.ieee.org/oui/oui.csv to the given map
