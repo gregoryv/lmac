@@ -2,7 +2,6 @@ package lmac
 
 import (
 	"fmt"
-	"testing"
 )
 
 func ExampleFind() {
@@ -16,6 +15,10 @@ func ExampleFind() {
 	fmt.Println()
 	// ma-s           .............
 	fmt.Println(Find("00:1b:c5:04:b1:11"))
+	fmt.Println()
+	// unrecognized
+	fmt.Println(Find("jibberish"))
+	fmt.Println(Find("ff:ff:ff:ff:ff"))
 	// output:
 	// AM Communications, Inc.
 	// ASSA ABLOY AB
@@ -24,28 +27,7 @@ func ExampleFind() {
 	// JRK VISION
 	//
 	// Silicon Controls
-}
-
-func TestFind(t *testing.T) {
-	cases := []struct {
-		arg string
-		exp string
-	}{
-		{
-			arg: "ff:ff:tt",
-			exp: "unknown",
-		},
-		{
-			arg: "ff:ff:ff:ff:ff",
-			exp: "unknown",
-		},
-	}
-	for _, c := range cases {
-		t.Run(c.arg, func(t *testing.T) {
-			got := Find(c.arg)
-			if got != c.exp {
-				t.Errorf("\ngot: %s\nexp: %s", got, c.exp)
-			}
-		})
-	}
+	//
+	// unknown
+	// unknown
 }
