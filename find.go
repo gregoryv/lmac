@@ -17,6 +17,10 @@ func Find(mac string) string {
 		return res
 	}
 
+	if res := findMas(mac); res != "" && res != "IEEE Registration Authority" {
+		return res
+	}
+
 	return "unknown"
 }
 
@@ -41,6 +45,20 @@ func findMam(mac string) string {
 	}
 
 	org := mam[p]
+	if org != "" {
+		return org
+	}
+
+	return ""
+}
+
+func findMas(mac string) string {
+	p, err := prefixS(mac)
+	if err != nil {
+		return ""
+	}
+
+	org := mas[p]
 	if org != "" {
 		return org
 	}

@@ -123,10 +123,15 @@ func genMAS(varname, out, src string) {
 
 package lmac
 
-var %s = map[string]string{
+var %s = map[[5]byte]string{
 `, varname)
-	for _, k := range keys {
-		fmt.Fprintf(w, "\t%q: %q,\n", k, oui[k])
+	for _, mac := range keys {
+		p, err := prefixS(mac + "0")
+		if err != nil {
+			log.Fatal(err)
+		}
+		key := fmt.Sprintf("[5]byte{%v, %v, %v, %v, %v}", p[0], p[1], p[2], p[3], p[4])
+		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
 	}
 	fmt.Fprintln(w, "}")
 	w.Close()
@@ -220,5 +225,23 @@ func prefixM(v string) ([4]byte, error) {
 	p[1] = raw[1]
 	p[2] = raw[2]
 	p[3] = raw[3] & 0xf0
+	return p, nil
+}
+
+func prefixS(v string) ([5]byte, error) {
+	v = strings.ReplaceAll(v, ":", "")
+	v = strings.ReplaceAll(v, "-", "")
+
+	var p [5]byte
+	raw, err := hex.DecodeString(v)
+	if err != nil {
+		return p, err
+	}
+
+	p[0] = raw[0]
+	p[1] = raw[1]
+	p[2] = raw[2]
+	p[3] = raw[3]
+	p[4] = raw[4] & 0xf0
 	return p, nil
 }
