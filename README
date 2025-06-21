@@ -1,40 +1,31 @@
 NAME
 
-	lmac - convert http://standards-oui.ieee.org/oui/oui.csv to
-	a Go map
+	lmac - find organization as defined by http://standards-oui.ieee.org/
 
 DESCRIPTION
 
-	Converts a CSV file of assigned MACs to companies and
-	organizations to a Go map for easy lookup.
+	Lookup one or more MAC addresses to organizations.
+	Values are matched against ma-l, ma-m and ma-s lists.
 
 SYNOPSIS
 
 	$ go install github.com/gregoryv/lmac@latest
-	$ wget http://standards-oui.ieee.org/oui/oui.csv
-	$ lmac < oui.csv > oui.go
+	$ lmac --help
+
+	Or use as package in Go
+
+	package main
+	
+	import "github.com/gregoryv/lmac"
+	
+	org := lmac.Find("00:aa:bb")
+
 
 SEE ALSO
 
 	A similar implementation, using [3]byte as the key, is found
 	at https://github.com/google/gopacket/tree/master/macs
 	
-EXAMPLES
-
-	Showing a partial output
-	
-	// GENERATED, DO NOT EDIT!
-	
-	package main
-	
-	var result = map[string]string{
-	        "00:00:00": "Xerox Corporation",
-	        ...
-	        "00:00:0a": "Omron Tateisi Electronics",
-	        ...
-	        "fc:ff:aa": "Ieee Registration Authority",
-	}
-
 AUTHOR
 
 	Gregory Vinčić
