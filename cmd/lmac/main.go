@@ -29,10 +29,9 @@ Example
 
   Lookup specific mac
   $ lmac F8:1A:2B:00:00:FA
-  F8:1A:2B:00:00:FA Google, Inc.
-`)
+  F8:1A:2B:00:00:FA Google, Inc.`)
 
-		fmt.Fprintln(os.Stdout, "Last updated", lmac.LastUpdate)
+		fmt.Fprintln(os.Stdout, "\nLast updated", lmac.LastUpdate)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
