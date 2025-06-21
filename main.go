@@ -69,7 +69,21 @@ func Parse(oui map[string]string, r io.Reader) {
 			}
 			mac := record[1]
 			org := record[2]
-			key := strings.ToLower(mac)
+			if org == "Organization Name" {
+				continue
+			}
+			tmp := strings.ToLower(mac)
+			var key string
+			for i := 0; i < len(tmp); i += 2 {
+				if i > 0 {
+					key += ":"
+				}
+				if i+2 > len(tmp) {
+					key += tmp[i:]
+					continue
+				}
+				key += tmp[i : i+2]
+			}
 			oui[key] = org
 		}
 	}()
