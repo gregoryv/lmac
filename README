@@ -1,6 +1,6 @@
 NAME
 
-	oui2go - convert http://standards-oui.ieee.org/oui/oui.csv to
+	lmac - convert http://standards-oui.ieee.org/oui/oui.csv to
 	a Go map
 
 DESCRIPTION
@@ -10,9 +10,9 @@ DESCRIPTION
 
 SYNOPSIS
 
-	$ go install github.com/gregoryv/oui2go@latest
+	$ go install github.com/gregoryv/lmac@latest
 	$ wget http://standards-oui.ieee.org/oui/oui.csv
-	$ oui2go < oui.csv > oui.go
+	$ lmac < oui.csv > oui.go
 
 SEE ALSO
 
