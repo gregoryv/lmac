@@ -8,17 +8,10 @@ DESCRIPTION
 	Values are matched against ma-l, ma-m and ma-s lists.
 
 SYNOPSIS
-	
-	import "github.com/gregoryv/lmac"
-	
-	org := lmac.Find("00:aa:bb")
 
+	$ go install github.com/gregoryv/lmac@latest
+	$ lmac --help
 
-SEE ALSO
-
-	A similar implementation, is found at
-	https://github.com/google/gopacket/tree/master/macs
-	
 AUTHOR
 
 	Gregory Vinčić
