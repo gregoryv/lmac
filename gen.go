@@ -5,6 +5,7 @@ package main
 
 import (
 	"encoding/csv"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -17,9 +18,46 @@ import (
 )
 
 func main() {
-	genFile("mal", "ma-l.go", "source/ma-l.csv")
+	genMAL("mal", "ma-l.go", "source/ma-l.csv")
 	genFile("mam", "ma-m.go", "source/ma-m.csv")
 	genFile("mas", "ma-s.go", "source/ma-s.csv")
+}
+
+func genMAL(varname, out, src string) {
+	oui := make(map[string]string)
+	fh, _ := os.Open(src)
+	defer fh.Close()
+	Parse(oui, fh)
+
+	if len(oui) == 0 {
+		fmt.Fprintln(os.Stderr, "missing data")
+		os.Exit(0)
+	}
+	// sort keys
+	keys := make([]string, 0, len(oui))
+	for k := range oui {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+
+	// write go file
+	w, _ := os.Create(out)
+	fmt.Fprintf(w, `
+// GENERATED, DO NOT EDIT!
+
+package lmac
+
+var %s = map[[3]byte]string{
+`, varname)
+	for _, mac := range keys {
+		p, err := lprefix(mac)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Fprintf(w, "\t[3]byte{%v, %v, %v}: %q,\n", p[0], p[1], p[2], oui[mac])
+	}
+	fmt.Fprintln(w, "}")
+	w.Close()
 }
 
 func genFile(varname, out, src string) {
@@ -108,4 +146,20 @@ func Parse(oui map[string]string, r io.Reader) {
 		// scan has started
 		<-done
 	}
+}
+
+func lprefix(v string) ([3]byte, error) {
+	v = strings.ReplaceAll(v, ":", "")
+	v = strings.ReplaceAll(v, "-", "")
+
+	var p [3]byte
+	raw, err := hex.DecodeString(v)
+	if err != nil {
+		return p, err
+	}
+
+	p[0] = raw[0]
+	p[1] = raw[1]
+	p[0o2] = raw[2]
+	return p, nil
 }
