@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/gregoryv/lmac"
 	"github.com/gregoryv/lmac/source"
@@ -37,39 +35,26 @@ Example
 	}
 	flag.Parse()
 
+	// if arguments are given
 	for _, mac := range flag.Args() {
 		fmt.Println(mac, lmac.Find(mac))
 	}
+	if len(flag.Args()) > 0 {
+		os.Exit(0)
+	}
 
-	var (
-		done     = make(chan struct{})
-		scanning = make(chan struct{})
-		once     sync.Once
-	)
-	go func() {
-		defer close(done)
-		s := bufio.NewScanner(os.Stdin)
-		for s.Scan() {
-			// if we get here there are values on stdin
-			once.Do(func() { close(scanning) })
-
-			line := strings.TrimSpace(s.Text())
-			if len(line) == 0 {
-				continue
-			}
-			i := strings.Index(line, " ")
-			mac := line
-			if i > 0 {
-				mac = line[:i]
-			}
-
-			fmt.Println(line, lmac.Find(mac))
+	s := bufio.NewScanner(os.Stdin)
+	for s.Scan() {
+		line := strings.TrimSpace(s.Text())
+		if len(line) == 0 {
+			continue
 		}
-	}()
+		i := strings.Index(line, " ")
+		mac := line
+		if i > 0 {
+			mac = line[:i]
+		}
 
-	select {
-	case <-time.After(100 * time.Millisecond):
-	case <-scanning:
-		<-done
+		fmt.Println(line, lmac.Find(mac))
 	}
 }
