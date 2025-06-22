@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gregoryv/lmac"
+	"github.com/gregoryv/lmac/source"
 )
 
 func main() {
@@ -31,7 +32,7 @@ Example
   $ lmac F8:1A:2B:00:00:FA
   F8:1A:2B:00:00:FA Google, Inc.`)
 
-		fmt.Fprintln(os.Stdout, "\nLast updated", lmac.LastUpdate)
+		fmt.Fprintln(os.Stdout, "\nLast updated", source.LastUpdate)
 		flag.PrintDefaults()
 	}
 	flag.Parse()

@@ -36,10 +36,8 @@ func genMAL(size int, varname, out, src string) {
 
 package lmac
 
-const LastUpdate string = %q
-
 var %s = map[[%v]byte]string{
-`, time.Now().Format(time.DateOnly), varname, size)
+`, varname, size)
 	for _, mac := range keys {
 		p, err := prefixL(mac)
 		if err != nil {
