@@ -18,27 +18,16 @@ import (
 )
 
 func main() {
-	genMAL("mal", "mal.go", "source/mal.csv")
+	genMAL(3, "mal", "mal.go", "source/mal.csv")
 	genMAM("mam", "mam.go", "source/mam.csv")
 	genMAS("mas", "mas.go", "source/mas.csv")
 }
 
-func genMAL(varname, out, src string) {
+func genMAL(size int, varname, out, src string) {
 	oui := make(map[string]string)
 	fh, _ := os.Open(src)
 	defer fh.Close()
-	Parse(oui, fh)
-
-	if len(oui) == 0 {
-		fmt.Fprintln(os.Stderr, "missing data")
-		os.Exit(0)
-	}
-	// sort keys
-	keys := make([]string, 0, len(oui))
-	for k := range oui {
-		keys = append(keys, k)
-	}
-	slices.Sort(keys)
+	keys := Parse(oui, fh)
 
 	// write go file
 	w, _ := os.Create(out)
@@ -49,36 +38,40 @@ package lmac
 
 const LastUpdate string = %q
 
-var %s = map[[3]byte]string{
-`, time.Now().Format(time.DateOnly), varname)
+var %s = map[[%v]byte]string{
+`, time.Now().Format(time.DateOnly), varname, size)
 	for _, mac := range keys {
 		p, err := prefixL(mac)
 		if err != nil {
 			log.Fatal(err)
 		}
-		key := fmt.Sprintf("[3]byte{%v, %v, %v}", p[0], p[1], p[2])
-		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
+		fmt.Fprintln(w, mapline(p[:], oui[mac]))
 	}
 	fmt.Fprintln(w, "}")
 	w.Close()
+}
+
+func mapline(p []byte, val string) string {
+	format := fmt.Sprintf("[%v]byte{", len(p))
+	var args []any
+	for i, b := range p {
+		args = append(args, b)
+		if i == 0 {
+			format += "%v"
+			continue
+		}
+		format += ", %v"
+	}
+	format += "}"
+	key := fmt.Sprintf(format, args...)
+	return fmt.Sprintf("\t%s: %q,", key, val)
 }
 
 func genMAM(varname, out, src string) {
 	oui := make(map[string]string)
 	fh, _ := os.Open(src)
 	defer fh.Close()
-	Parse(oui, fh)
-
-	if len(oui) == 0 {
-		fmt.Fprintln(os.Stderr, "missing data")
-		os.Exit(0)
-	}
-	// sort keys
-	keys := make([]string, 0, len(oui))
-	for k := range oui {
-		keys = append(keys, k)
-	}
-	slices.Sort(keys)
+	keys := Parse(oui, fh)
 
 	// write go file
 	w, _ := os.Create(out)
@@ -94,8 +87,7 @@ var %s = map[[4]byte]string{
 		if err != nil {
 			log.Fatal(err)
 		}
-		key := fmt.Sprintf("[4]byte{%v, %v, %v, %v}", p[0], p[1], p[2], p[3])
-		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
+		fmt.Fprintln(w, mapline(p[:], oui[mac]))
 	}
 	fmt.Fprintln(w, "}")
 	w.Close()
@@ -105,18 +97,7 @@ func genMAS(varname, out, src string) {
 	oui := make(map[string]string)
 	fh, _ := os.Open(src)
 	defer fh.Close()
-	Parse(oui, fh)
-
-	if len(oui) == 0 {
-		fmt.Fprintln(os.Stderr, "missing data")
-		os.Exit(0)
-	}
-	// sort keys
-	keys := make([]string, 0, len(oui))
-	for k := range oui {
-		keys = append(keys, k)
-	}
-	slices.Sort(keys)
+	keys := Parse(oui, fh)
 
 	// write go file
 	w, _ := os.Create(out)
@@ -132,15 +113,14 @@ var %s = map[[5]byte]string{
 		if err != nil {
 			log.Fatal(err)
 		}
-		key := fmt.Sprintf("[5]byte{%v, %v, %v, %v, %v}", p[0], p[1], p[2], p[3], p[4])
-		fmt.Fprintf(w, "\t%s: %q,\n", key, oui[mac])
+		fmt.Fprintln(w, mapline(p[:], oui[mac]))
 	}
 	fmt.Fprintln(w, "}")
 	w.Close()
 }
 
 // Parse http://standards-oui.ieee.org/oui/oui.csv to the given map
-func Parse(oui map[string]string, r io.Reader) {
+func Parse(oui map[string]string, r io.Reader) []string {
 	var (
 		done    = make(chan struct{})
 		parsing = make(chan struct{})
@@ -192,6 +172,19 @@ func Parse(oui map[string]string, r io.Reader) {
 		// scan has started
 		<-done
 	}
+
+	if len(oui) == 0 {
+		fmt.Fprintln(os.Stderr, "missing data")
+		os.Exit(0)
+	}
+
+	// sort keys
+	keys := make([]string, 0, len(oui))
+	for k := range oui {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+	return keys
 }
 
 // ----------------------------------------
