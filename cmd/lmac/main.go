@@ -15,23 +15,30 @@ import (
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stdout, "Usage:", os.Args[0], "MAC...", `
+		fmt.Fprintln(os.Stdout, "Usage:", os.Args[0], "[OPTIONS] MAC...", `
 
 Either provide a list of MAC strings as arguments or a list
 of MAC values on stdin, one on each line.
 
+OPTIONS
+	--help, -h	Show this help and exit.`)
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stdout, `
 Example
 
-  Scan network for devices
-  $ arp -a | awk '{print $4 " " $2}' | lmac
+  Lookup network devices
+  $ arp -n | awk '{print $3 " " $1}' | lmac
+  HWaddress Address
+  f4:fe:fb:2e:c7:bc 192.168.1.55 Samsung Electronics Co.,Ltd
+  d8:b3:70:b0:0a:7d 192.168.1.42 Ubiquiti Inc
   ...
+
 
   Lookup specific mac
   $ lmac F8:1A:2B:00:00:FA
   F8:1A:2B:00:00:FA Google, Inc.`)
 
 		fmt.Fprintln(os.Stdout, "\nLast updated", source.LastUpdate)
-		flag.PrintDefaults()
 	}
 	flag.Parse()
 
@@ -49,12 +56,8 @@ Example
 		if len(line) == 0 {
 			continue
 		}
-		i := strings.Index(line, " ")
-		mac := line
-		if i > 0 {
-			mac = line[:i]
-		}
-
+		parts := strings.Split(line, " ")
+		mac := parts[0]
 		fmt.Println(line, lmac.Lookup(mac))
 	}
 }
