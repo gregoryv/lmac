@@ -9,55 +9,39 @@ package lmac
 //
 // The values are case insensitive.
 func Find(mac string) string {
-	if res := findMal(mac); res != "" && res != "IEEE Registration Authority" {
+	if res := findMas(mac); res != "" {
 		return res
 	}
 
-	if res := findMam(mac); res != "" && res != "IEEE Registration Authority" {
+	if res := findMam(mac); res != "" {
 		return res
 	}
 
-	return findMas(mac)
+	return findMal(mac)
 }
 
 func findMal(mac string) string {
-	p, err := prefixL(mac)
-	if err != nil {
+	var key [3]byte
+	if err := prefix(key[:], mac); err != nil {
 		return ""
 	}
-
-	org := mal[p]
-	if org != "" {
-		return org
-	}
-
-	return ""
+	return mal[key]
 }
 
 func findMam(mac string) string {
-	p, err := prefixM(mac)
-	if err != nil {
+	var key [4]byte
+	if err := prefix(key[:], mac); err != nil {
 		return ""
 	}
-
-	org := mam[p]
-	if org != "" {
-		return org
-	}
-
-	return ""
+	key[3] = key[3] & 0xf0
+	return mam[key]
 }
 
 func findMas(mac string) string {
-	p, err := prefixS(mac)
-	if err != nil {
+	var key [5]byte
+	if err := prefix(key[:], mac); err != nil {
 		return ""
 	}
-
-	org := mas[p]
-	if org != "" {
-		return org
-	}
-
-	return ""
+	key[4] = key[4] & 0xf0
+	return mas[key]
 }

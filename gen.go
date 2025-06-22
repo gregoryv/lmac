@@ -18,36 +18,36 @@ import (
 )
 
 func main() {
-	genMAL(3, "mal", "mal.go", "source/mal.csv")
-	genMAM("mam", "mam.go", "source/mam.csv")
-	genMAS("mas", "mas.go", "source/mas.csv")
+	gen(3, "", "mal", "mal.go", "source/mal.csv")
+	gen(4, "0", "mam", "mam.go", "source/mam.csv")
+	gen(5, "0", "mas", "mas.go", "source/mas.csv")
 }
 
-func genMAL(size int, varname, out, src string) {
+func gen(size int, last, varname, out, src string) {
 	oui := make(map[string]string)
 	fh, _ := os.Open(src)
 	defer fh.Close()
+
 	keys := Parse(oui, fh)
 
 	// write go file
 	w, _ := os.Create(out)
-	fmt.Fprintf(w, `
+	fmt.Fprintf(w, header, varname, size)
+	for _, mac := range keys {
+		p := prefix(size, mac+last)
+		fmt.Fprintln(w, mapline(p, oui[mac]))
+	}
+	fmt.Fprintln(w, "}")
+	w.Close()
+}
+
+const header = `
 // GENERATED, DO NOT EDIT!
 
 package lmac
 
 var %s = map[[%v]byte]string{
-`, varname, size)
-	for _, mac := range keys {
-		p, err := prefixL(mac)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintln(w, mapline(p[:], oui[mac]))
-	}
-	fmt.Fprintln(w, "}")
-	w.Close()
-}
+`
 
 func mapline(p []byte, val string) string {
 	format := fmt.Sprintf("[%v]byte{", len(p))
@@ -63,58 +63,6 @@ func mapline(p []byte, val string) string {
 	format += "}"
 	key := fmt.Sprintf(format, args...)
 	return fmt.Sprintf("\t%s: %q,", key, val)
-}
-
-func genMAM(varname, out, src string) {
-	oui := make(map[string]string)
-	fh, _ := os.Open(src)
-	defer fh.Close()
-	keys := Parse(oui, fh)
-
-	// write go file
-	w, _ := os.Create(out)
-	fmt.Fprintf(w, `
-// GENERATED, DO NOT EDIT!
-
-package lmac
-
-var %s = map[[4]byte]string{
-`, varname)
-	for _, mac := range keys {
-		p, err := prefixM(mac + "0")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintln(w, mapline(p[:], oui[mac]))
-	}
-	fmt.Fprintln(w, "}")
-	w.Close()
-}
-
-func genMAS(varname, out, src string) {
-	oui := make(map[string]string)
-	fh, _ := os.Open(src)
-	defer fh.Close()
-	keys := Parse(oui, fh)
-
-	// write go file
-	w, _ := os.Create(out)
-	fmt.Fprintf(w, `
-// GENERATED, DO NOT EDIT!
-
-package lmac
-
-var %s = map[[5]byte]string{
-`, varname)
-	for _, mac := range keys {
-		p, err := prefixS(mac + "0")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintln(w, mapline(p[:], oui[mac]))
-	}
-	fmt.Fprintln(w, "}")
-	w.Close()
 }
 
 // Parse http://standards-oui.ieee.org/oui/oui.csv to the given map
@@ -186,42 +134,17 @@ func Parse(oui map[string]string, r io.Reader) []string {
 }
 
 // ----------------------------------------
-// same as prefix.go
+// similar to the one in prefix.go
 
-func prefixL(v string) ([3]byte, error) {
-	var p [3]byte
-	if err := prefix(p[:], v); err != nil {
-		return p, err
-	}
-	return p, nil
-}
-
-func prefixM(v string) ([4]byte, error) {
-	var p [4]byte
-	if err := prefix(p[:], v); err != nil {
-		return p, err
-	}
-	p[3] = p[3] & 0xf0
-	return p, nil
-}
-
-func prefixS(v string) ([5]byte, error) {
-	var p [5]byte
-	if err := prefix(p[:], v); err != nil {
-		return p, err
-	}
-	p[4] = p[4] & 0xf0
-	return p, nil
-}
-
-func prefix(dst []byte, v string) error {
+func prefix(size int, v string) []byte {
 	v = strings.ReplaceAll(v, ":", "")
 	v = strings.ReplaceAll(v, "-", "")
 
 	raw, err := hex.DecodeString(v)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+	dst := make([]byte, size)
 	copy(dst, raw)
-	return nil
+	return dst
 }
