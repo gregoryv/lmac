@@ -13,7 +13,9 @@ body { margin-left: 40px; }
 a { font-weight: bold; color: #ffffff; }
 p { padding-left: 70px; font-family: mono; }
 h2 { font-weight: normal; font-size: 14px; }
-
+pre { margin-left: 70px; background-color: black; padding: 12px 19px;
+    max-width: 560px;
+}
 </style>
 
 <div id="leftbar">&nbsp;</div>
@@ -33,12 +35,43 @@ Lookup one or more MAC addresses to organizations.
 Values are matched against ma-l, ma-m and ma-s lists.
 </p>
 
+<h2>SYNOPSIS</h2>
+
+<pre>
+$ lmac -h
+Usage: lmac [OPTIONS] MAC...
+
+Either provide a list of MAC strings as arguments or a list
+of MAC values on stdin, one on each line.
+
+OPTIONS
+        --help, -h      Show this help and exit.
+
+Example
+
+  Lookup network devices
+  $ arp -n | awk '{print $3 " " $1}' | lmac
+  HWaddress Address
+  f4:fe:fb:2e:c7:bc 192.168.1.55 Samsung Electronics Co.,Ltd
+  d8:b3:70:b0:0a:7d 192.168.1.42 Ubiquiti Inc
+  ...
+
+
+  Lookup specific mac
+  $ lmac F8:1A:2B:00:00:FA
+  F8:1A:2B:00:00:FA Google, Inc.
+
+
+</pre>
+
 <h2>DOWNLOADS</h2>
 
 <p>
 - <a href="https://github.com/gregoryv/lmac">Source code</a><br>
 - <a href="https://github.com/gregoryv/lmac">Releases</a>
 </p>
+
+
 
 <h2>AUTHOR</h2>
 
