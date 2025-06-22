@@ -37,7 +37,7 @@ Example
 
 	// if arguments are given
 	for _, mac := range flag.Args() {
-		fmt.Println(mac, lmac.Find(mac))
+		fmt.Println(mac, lmac.Lookup(mac))
 	}
 	if len(flag.Args()) > 0 {
 		os.Exit(0)
@@ -55,6 +55,6 @@ Example
 			mac = line[:i]
 		}
 
-		fmt.Println(line, lmac.Find(mac))
+		fmt.Println(line, lmac.Lookup(mac))
 	}
 }

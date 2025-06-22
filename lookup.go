@@ -1,6 +1,6 @@
 package lmac
 
-// Find registered organization for the given MAC
+// Lookup registered organization for the given MAC
 // Allowed formats are
 //
 //	00:00:00:00:00:aa
@@ -8,7 +8,7 @@ package lmac
 //	0000000000aa
 //
 // The values are case insensitive.
-func Find(mac string) string {
+func Lookup(mac string) string {
 	if res := findMas(mac); res != "" {
 		return res
 	}

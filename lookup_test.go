@@ -4,21 +4,21 @@ import (
 	"fmt"
 )
 
-func ExampleFind() {
+func ExampleLookup() {
 	// ma-l           ........
-	fmt.Println(Find("00:03:08:00:00:00"))
-	fmt.Println(Find("00177a000000"))
+	fmt.Println(Lookup("00:03:08:00:00:00"))
+	fmt.Println(Lookup("00177a000000"))
 	fmt.Println()
 	// ma-m           ..........
-	fmt.Println(Find("00:55:da:f0:01:00"))
-	fmt.Println(Find("04:58:5D:89:99:99"))
+	fmt.Println(Lookup("00:55:da:f0:01:00"))
+	fmt.Println(Lookup("04:58:5D:89:99:99"))
 	fmt.Println()
 	// ma-s           .............
-	fmt.Println(Find("00:1b:c5:04:b1:11"))
+	fmt.Println(Lookup("00:1b:c5:04:b1:11"))
 	fmt.Println()
 	// unrecognized
-	fmt.Println(Find("jibberish"))
-	fmt.Println(Find("ff:ff:ff:ff:ff"))
+	fmt.Println(Lookup("jibberish"))
+	fmt.Println(Lookup("ff:ff:ff:ff:ff"))
 	// output:
 	// AM Communications, Inc.
 	// ASSA ABLOY AB
