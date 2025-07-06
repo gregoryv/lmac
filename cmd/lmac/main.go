@@ -21,7 +21,7 @@ Either provide a list of MAC strings as arguments or a list
 of MAC values on stdin, one on each line.
 
 OPTIONS
-  --help, -h	Show this help and exit.`)
+  -h, --help	Show this help and exit.`)
 		flag.PrintDefaults()
 		fmt.Fprintln(os.Stdout, `
 Example
@@ -40,8 +40,8 @@ Example
 
 		fmt.Fprintln(os.Stdout, "\nLast updated", source.LastUpdate)
 	}
-	tidy := flag.Bool("t", false,
-		"Tidy organization name",
+	raw := flag.Bool("r", false,
+		"Use raw organization name",
 	)
 	flag.Parse()
 
@@ -62,7 +62,7 @@ Example
 		parts := strings.Split(line, " ")
 		mac := parts[0]
 		org := lmac.Lookup(mac)
-		if *tidy {
+		if !*raw {
 			org = tidyOrg(org)
 		}
 		fmt.Println(line, org)

@@ -3,7 +3,13 @@
 This project adheres to semantic versioning and all major changes
 will be noted in this file.
 
-## [0.2.0]
+## [0.3.0]
+
+- Replace option -t with -r for the inverse logic.
+  I.e. -r shows the raw organization name rather than a
+  tidied one word.
+
+## [0.2.0] 2025-07-06
 
 - Tidy organization name with cmd/lmac option -t
 
