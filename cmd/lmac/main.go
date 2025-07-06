@@ -21,7 +21,7 @@ Either provide a list of MAC strings as arguments or a list
 of MAC values on stdin, one on each line.
 
 OPTIONS
-	--help, -h	Show this help and exit.`)
+  --help, -h	Show this help and exit.`)
 		flag.PrintDefaults()
 		fmt.Fprintln(os.Stdout, `
 Example
@@ -40,6 +40,9 @@ Example
 
 		fmt.Fprintln(os.Stdout, "\nLast updated", source.LastUpdate)
 	}
+	tidy := flag.Bool("t", false,
+		"Tidy organization name",
+	)
 	flag.Parse()
 
 	// if arguments are given
@@ -58,6 +61,28 @@ Example
 		}
 		parts := strings.Split(line, " ")
 		mac := parts[0]
-		fmt.Println(line, lmac.Lookup(mac))
+		org := lmac.Lookup(mac)
+		if *tidy {
+			org = tidyOrg(org)
+		}
+		fmt.Println(line, org)
 	}
+}
+
+func tidyOrg(org string) string {
+	org = strings.TrimSpace(org)
+	org = strings.TrimSuffix(org, ".")
+	for _, v := range stripSuffixes {
+		org = strings.TrimSuffix(org, v)
+	}
+	org = strings.ReplaceAll(org, " ", "_")
+	return org
+}
+
+var stripSuffixes = []string{
+	" Inc",
+	" INC",
+	" AB",
+	", LTD",
+	",Inc",
 }
