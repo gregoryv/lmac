@@ -12,6 +12,13 @@ SYNOPSIS
 	$ go install github.com/gregoryv/lmac@latest
 	$ lmac --help
 
+OPTIONS
+
+	-t Tidy organization name, removing abbreviated suffixes and
+	   replacing spaces with underscore.
+
+	-h, --help  Show help and exit.
+
 AUTHOR
 
 	Gregory Vinčić
