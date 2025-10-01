@@ -3,8 +3,9 @@
 This project adheres to semantic versioning and all major changes
 will be noted in this file.
 
-## [0.3.0]
+## [0.3.0] 2025-10-01
 
+- Source update
 - Replace option -t with -r for the inverse logic.
   I.e. -r shows the raw organization name rather than a
   tidied one word.
