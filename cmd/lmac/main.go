@@ -29,14 +29,16 @@ Example
   Lookup network devices
   $ arp -n | awk '{print $3 " " $1}' | lmac
   HWaddress Address
-  f4:fe:fb:2e:c7:bc 192.168.1.55 Samsung Electronics Co.,Ltd
-  d8:b3:70:b0:0a:7d 192.168.1.42 Ubiquiti Inc
+  f4:fe:fb:2e:c7:bc 192.168.1.55 Samsung_Electronics_Co.,Ltd
+  f0:9f:c2:60:2b:17 192.168.1.213 Ubiquiti
+  30:05:5c:a1:2a:77 192.168.1.190 Brother_industries
+
   ...
 
 
   Lookup specific mac
   $ lmac F8:1A:2B:00:00:FA
-  F8:1A:2B:00:00:FA Google, Inc.`)
+  F8:1A:2B:00:00:FA Google`)
 
 		fmt.Fprintln(os.Stdout, "\nLast updated", source.LastUpdate)
 	}
@@ -47,7 +49,7 @@ Example
 
 	// if arguments are given
 	for _, mac := range flag.Args() {
-		fmt.Println(mac, lmac.Lookup(mac))
+		fmt.Println(mac, tidyOrg(lmac.Lookup(mac)))
 	}
 	if len(flag.Args()) > 0 {
 		os.Exit(0)
@@ -76,6 +78,7 @@ func tidyOrg(org string) string {
 		org = strings.TrimSuffix(org, v)
 	}
 	org = strings.ReplaceAll(org, " ", "_")
+	org = strings.Trim(org, ".,_")
 	return org
 }
 
