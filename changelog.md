@@ -5,10 +5,10 @@ will be noted in this file.
 
 ## [0.4.0-dev]
 
+- Exit if no arguments nor piped data exists on stdin
 - Tidy organisational name when MAC used as arguments
 
 ## [0.3.3] 2025-11-25
-## [0.3.2] 2025-11-25
 ## [0.3.1] 2025-11-02
 
 - Source update

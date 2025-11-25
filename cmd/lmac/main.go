@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -55,6 +56,9 @@ Example
 		os.Exit(0)
 	}
 
+	if !hasPipe(os.Stdin) {
+		os.Exit(0)
+	}
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
 		line := strings.TrimSpace(s.Text())
@@ -69,6 +73,11 @@ Example
 		}
 		fmt.Println(line, org)
 	}
+}
+
+func hasPipe(file *os.File) bool {
+	fi, _ := file.Stat()
+	return fi.Mode()&fs.ModeNamedPipe != 0
 }
 
 func tidyOrg(org string) string {
