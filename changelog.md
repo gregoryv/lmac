@@ -3,6 +3,7 @@
 This project adheres to semantic versioning and all major changes
 will be noted in this file.
 
+## [0.3.2] 2025-11-25
 ## [0.3.1] 2025-11-02
 
 - Source update
